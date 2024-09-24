@@ -12,16 +12,21 @@ fn main() {
             use crate::python::{check_python_version, PYTHON_SUFFIXES};
             for py in PYTHON_SUFFIXES.into_iter() {
                 let exe = format!("python{}", py);
-                if let Ok(output) = Command::new(&exe).args(&["--version"]).output() {
-                    if let Ok(version) = str::from_utf8(&output.stdout) {
-                        println!("Python: {}", version);
-                        let v = version.split(" ").last().expect("Couldn't get python version");
-                        if check_python_version(v) {
-                            println!("Got a good version of Python");
-                        } else {
-                            println!("Wrong or no python installed");
+                match Command::new(&exe).args(&["--version"]).output() {
+                    Ok(output) => {
+                        if let Ok(version) = str::from_utf8(&output.stdout) {
+                            let v = version
+                                .split(" ")
+                                .last()
+                                .expect("Couldn't get python version");
+                            if check_python_version(v) {
+                                println!("Got a good version of Python");
+                            } else {
+                                println!("Wrong or no python installed");
+                            }
                         }
                     }
+                    Err(e) => println!("{:?}", e),
                 }
             }
             Ok(())

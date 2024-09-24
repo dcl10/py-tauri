@@ -5,7 +5,6 @@ pub const MINIMUM_PYTHON: &str = ">=3.10";
 pub const PYTHON_SUFFIXES: [&str; 2] = ["", "3"];
 
 pub fn check_python_version(python_version: &str) -> bool {
-    println!("{python_version}");
     let minimum_py = VersionReq::parse(MINIMUM_PYTHON).unwrap();
     if let Ok(actual_version) = Version::parse(python_version.trim()) {
         return minimum_py.matches(&actual_version);
