@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import {invoke} from "@tauri-apps/api";
+import {invoke} from "@tauri-apps/api/tauri";
 
 export default function Home() {
   const callAdd = (a: number, b: number) => {
