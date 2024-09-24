@@ -4,7 +4,25 @@
 use core::str;
 use std::process::Command;
 
+use pyo3::prelude::*;
+
 mod python;
+
+#[tauri::command]
+fn python_add(a: f32, b: f32) -> Result<f32, String> {
+    let py_mod = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/python/mod.py"));
+    let result = Python::with_gil(|py| -> Result<f32, String> {
+        let module = PyModule::from_code_bound(py, py_mod, "mod", "mod").unwrap();
+        let add = module.getattr("add").unwrap();
+        let results = add.call((a, b), None).unwrap();
+        if let Ok(answer) = results.extract::<f32>() {
+            Ok(answer)
+        } else {
+            Err("Unable to extract results from `mod.add`".to_string())
+        }
+    });
+    result
+}
 
 fn main() {
     tauri::Builder::default()
@@ -31,6 +49,7 @@ fn main() {
             }
             Ok(())
         })
+        .invoke_handler(tauri::generate_handler![python_add])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
