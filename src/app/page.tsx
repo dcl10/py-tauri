@@ -6,8 +6,8 @@ import {invoke} from "@tauri-apps/api";
 export default function Home() {
   const callAdd = (a: number, b: number) => {
     invoke<number>("python_add", {a, b})
-      .then(answer => console.log(answer))
-      .catch(error => console.error(error));
+      .then(answer => window.alert(answer))
+      .catch(error => window.alert(error));
   }
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
