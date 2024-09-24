@@ -16,7 +16,7 @@ fn python_add(a: f32, b: f32) -> Result<f32, String> {
         let add = module.getattr("add").unwrap();
         let results = add.call((a, b), None).unwrap();
         if let Ok(answer) = results.extract::<f32>() {
-            return Ok(answer);
+            Ok(answer)
         } else {
             Err("Unable to extract results from `mod.add`".to_string())
         }
