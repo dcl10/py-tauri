@@ -14,6 +14,9 @@
       "all": false,
       "dialog": {
         "message": true
+      },
+      "fs": {
+        "scope": ["$RESOURCE/*"]
       }
     },
     "bundle": {
@@ -31,7 +34,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.py.tauri",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -40,7 +43,7 @@
         "providerShortName": null,
         "signingIdentity": null
       },
-      "resources": [],
+      "resources": ["python/*"],
       "shortDescription": "",
       "targets": "all",
       "windows": {
