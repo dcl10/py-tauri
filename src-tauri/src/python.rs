@@ -1,6 +1,6 @@
 use core::str;
-use std::{process::Command, str::FromStr};
 use semver::{Version, VersionReq};
+use std::{process::Command, str::FromStr};
 use tauri::AppHandle;
 
 pub const MINIMUM_PYTHON: &str = ">=3.10";
@@ -25,9 +25,7 @@ pub fn create_venv(path: &str, exe: &str, app_handle: AppHandle) -> Result<Strin
         return Err("Invalid virtual environment path".to_string());
     }
     let venv_str = venv_dir_str_opt.unwrap();
-    let cmd = Command::new(exe)
-        .args(&["-m", "venv", venv_str])
-        .status();
+    let cmd = Command::new(exe).args(&["-m", "venv", venv_str]).status();
 
     match cmd {
         Ok(_) => {
@@ -35,8 +33,8 @@ pub fn create_venv(path: &str, exe: &str, app_handle: AppHandle) -> Result<Strin
             let python_path_str_opt = python_path_buf.to_str();
             let python = String::from_str(python_path_str_opt.unwrap());
             Ok(python.unwrap())
-        },
-        Err(_) => Err("Could not create the python virtual environment".to_string())
+        }
+        Err(_) => Err("Could not create the python virtual environment".to_string()),
     }
 }
 
