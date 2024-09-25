@@ -5,6 +5,7 @@ use core::str;
 use std::process::Command;
 
 use pyo3::prelude::*;
+use python::create_venv;
 
 mod python;
 
@@ -26,7 +27,7 @@ fn python_add(a: f32, b: f32) -> Result<f32, String> {
 
 fn main() {
     tauri::Builder::default()
-        .setup(|_app| {
+        .setup(|app| {
             use crate::python::{check_python_version, PYTHON_SUFFIXES};
             for py in PYTHON_SUFFIXES.into_iter() {
                 let exe = format!("python{}", py);
@@ -39,6 +40,8 @@ fn main() {
                                 .expect("Couldn't get python version");
                             if check_python_version(v) {
                                 println!("Got a good version of Python");
+                                create_venv("venv", &exe, app.handle());
+                                break;
                             } else {
                                 println!("Wrong or no python installed");
                             }
