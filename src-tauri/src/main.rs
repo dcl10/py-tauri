@@ -47,7 +47,7 @@ fn main() {
                                 .expect("Couldn't get python version");
                             if check_python_version(v) {
                                 println!("Got a good version of Python");
-                                create_venv("venv", &exe, app.handle());
+                                let _ = create_venv("venv", &exe, app.handle());
                                 break;
                             } else {
                                 println!("Wrong or no python installed");
