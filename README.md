@@ -1,4 +1,4 @@
-# `py-tauri`
+# `py-tauri` 🦀🐍
 This repo shows how you can embed a Python interpreter, both statically and dynamically, into a Tauri project. The interpreter can then be used to call some python code that is shipped with the app. In this case, call a function that adds 2 numbers together.
 
 ## Dynamic vs Static linking
@@ -31,3 +31,6 @@ CUSTOM_PYTHON=$HOME/CustomPython/lib cargo tauri build
 ```bash
 ./src-tauri/target/release/py-tauri
 ```
+
+## Help wanted 🙏
+If anyone seeing this has any ideas about how to fix the static embedding so that it can see the standard library and site packages, I'd really appreciate the feedback 😊
