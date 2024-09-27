@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# `py-tauri` 🦀🐍
+This repo shows how you can embed a Python interpreter, both statically and dynamically, into a Tauri project. The interpreter can then be used to call some python code that is shipped with the app. In this case, call a function that adds 2 numbers together.
 
-## Getting Started
+## Dynamic vs Static linking
+Dynamically linking to Python leads to a smaller executable by linking to a Python shared library. This automatically resolves paths to things like the Python standard library and site packages associated to that installation. The drawback is that the end user must have that exact version of Python (and the site packages) installed in their machines. This is not ideal for non-technical users who just want to download and install a program.
 
-First, run the development server:
+Statically embedding Python leads to a larger executable but means that end users do not need to have Python installed on their machine to run the program 👍. The **massive** drawback is that you have to find a way to package all the other parts of Python, like the standard library and site packages, into the build as well. Building Python for static linking only seems to give access to the interpreter, but you won't be able to do `import math`, for example 👎.
 
+## Building Python
+1. Download the [Python source code](https://www.python.org/downloads/source/).
+2. Unzip the archive `cd` into the directory.
+3. In the source code directory, run the following commands to build for dynamic linking:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+CPPFLAGS="-I$(brew --prefix openssl@3)/include" LDFLAGS="-L$(brew --prefix openssl@3)/lib" ./configure --with-openssl=$(brew --prefix openssl@3) --enable-optimizations --enable-shared --prefix=$HOME/CustomPython
+make -j4
+make install
+```
+For this to work you will need to have `openssl` installed on your machine. This is necessary for your compiled `pip` to be able to get packages using `ssl`.
+
+After running these commands, you will have a new Python installed in your home directory under `CustomPython`. In `CustomPython` you'll see 2 directories (`Python3.X` and `pkgconfig`) and a file called `libpython3.X` (`.so` on Linux, `.dylib` on MacOS, or `.dll` on Windows) which will be your shared library to link to the program.
+
+To build for a static embed, replace `--enable-shared` in the command above with `--enable-shared=no`. Now you will get a file called `libpython3.X.a` on Linux and MacOS. Static linking is not done for Windows, see [here](https://pyo3.rs/v0.22.3/building-and-distribution#statically-embedding-the-python-interpreter) for more information.
+
+## Build and run `py-tauri`
+1. To build this app, run the following command at the root of this repo:
+```bash
+CUSTOM_PYTHON=$HOME/CustomPython/lib cargo tauri build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Run the app:
+```bash
+./src-tauri/target/release/py-tauri
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Help wanted 🙏
+If anyone seeing this has any ideas about how to fix the static embedding so that it can see the standard library and site packages, I'd really appreciate the feedback 😊
